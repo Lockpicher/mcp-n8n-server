@@ -13,7 +13,7 @@ const server = new Server({
 
 /*
 |--------------------------------------------------------------------------
-| LISTA DE HERRAMIENTAS MCP
+| LISTA DE HERRAMIENTAS
 |--------------------------------------------------------------------------
 */
 server.setHandler("tools/list", async () => {
@@ -21,7 +21,7 @@ server.setHandler("tools/list", async () => {
     tools: [
       {
         name: "run_workflow",
-        description: "Ejecuta un workflow de n8n via API"
+        description: "Ejecuta un workflow en n8n vía API"
       },
       {
         name: "execution_status",
@@ -33,38 +33,79 @@ server.setHandler("tools/list", async () => {
 
 /*
 |--------------------------------------------------------------------------
-| EJECUCIÓN DE HERRAMIENTAS MCP
+| EJECUCIÓN DE HERRAMIENTAS
 |--------------------------------------------------------------------------
 */
 server.setHandler("tools/call", async ({ name, arguments: args }) => {
   try {
-    switch (name) {
-      case "run_workflow": {
-        const { workflowId, data } = args;
+    if (name === "run_workflow") {
+      const { workflowId, data } = args;
 
-        const res = await axios.post(
-          `${N8N_URL}/api/v1/workflows/${workflowId}/run`,
-          data || {},
-          {
-            headers: {
-              "X-N8N-API-KEY": N8N_API_KEY,
-            },
+      const res = await axios.post(
+        `${N8N_URL}/api/v1/workflows/${workflowId}/run`,
+        data || {},
+        {
+          headers: {
+            "X-N8N-API-KEY": N8N_API_KEY
           }
-        );
+        }
+      );
 
-        return { content: [{ type: "text", text: JSON.stringify(res.data) }] };
-      }
+      return {
+        content: [
+          { type: "text", text: JSON.stringify(res.data, null, 2) }
+        ]
+      };
+    }
 
-      case "execution_status": {
-        const { executionId } = args;
+    if (name === "execution_status") {
+      const { executionId } = args;
 
-        const res = await axios.get(
-          `${N8N_URL}/api/v1/executions/${executionId}`,
-          {
-            headers: {
-              "X-N8N-API-KEY": N8N_API_KEY,
-            },
+      const res = await axios.get(
+        `${N8N_URL}/api/v1/executions/${executionId}`,
+        {
+          headers: {
+            "X-N8N-API-KEY": N8N_API_KEY
           }
-        );
+        }
+      );
 
-        return { content: [{ type: "text", text: JS]()
+      return {
+        content: [
+          { type: "text", text: JSON.stringify(res.data, null, 2) }
+        ]
+      };
+    }
+
+    return {
+      content: [
+        { type: "text", text: `Unknown tool: ${name}` }
+      ]
+    };
+
+  } catch (err) {
+    return {
+      content: [
+        { type: "text", text: `Error: ${err.message}` }
+      ]
+    };
+  }
+});
+
+/*
+|--------------------------------------------------------------------------
+| EXPRESS WRAPPER PARA MCP
+|--------------------------------------------------------------------------
+*/
+const app = express();
+app.use(express.json());
+
+app.post("/mcp", server.express());
+
+app.get("/", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+app.listen(PORT, () => {
+  console.log(`MCP server running on port ${PORT}`);
+});
