@@ -1,0 +1,11 @@
+{
+  "name": "mcp-n8n-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.2",
+    "express": "^4.19.2"
+  }
+}
