@@ -1,0 +1,27 @@
+{
+  "tools": [
+    {
+      "name": "run_workflow",
+      "description": "Ejecuta un workflow en n8n mediante API",
+      "arguments": {
+        "type": "object",
+        "properties": {
+          "workflowId": { "type": "string" },
+          "data": { "type": "object" }
+        },
+        "required": ["workflowId"]
+      }
+    },
+    {
+      "name": "execution_status",
+      "description": "Consulta el estado de una ejecución en n8n",
+      "arguments": {
+        "type": "object",
+        "properties": {
+          "executionId": { "type": "string" }
+        },
+        "required": ["executionId"]
+      }
+    }
+  ]
+}
